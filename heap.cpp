@@ -21,17 +21,22 @@ void Heap::push(int value){
 // (but does not return it), then ensures
 // the heap is correctly arranged
 void Heap::pop(){
-  if(vdata.size() == 0) return;
-  vdata[0] = vdata[vdata.size() - 1];
+  if (vdata.empty()) return;
+
+  vdata[0] = vdata.back();
   vdata.pop_back();
+
   int index = 0;
-  while(index != vdata.size() - 1){
-    index = swapdown(index);
+  while (true) {
+    int next = swapdown(index);
+    if (next == index) break;
+    index = next;
   }
 }
 
 // Returns the minimum element in the heap
 int Heap::top(){
+  if (vdata.empty())return -1;
   return vdata[0];
 }
 
@@ -47,25 +52,20 @@ void Heap::swapup(int x){
   vdata[x] = vdata[(x -1)/2];
   vdata[(x -1)/2] = val;
 }
-int Heap:: swapdown(int x){
-  int val = vdata[x];
+  int Heap::swapdown(int x) {
+  int smallest = x;
   int left = 2 * x + 1;
   int right = 2 * x + 2;
-  if(left > vdata.size() - 1 && right > vdata.size() - 1) return vdata.size() - 1;
-  if(right > vdata.size() - 1 && vdata[left] > val){
-    vdata[x] = vdata[left];
-    vdata[left] = val;
-    return left;
+  if (left < vdata.size() && vdata[left] < vdata[smallest])
+    smallest = left;
+
+  if (right < vdata.size() && vdata[right] < vdata[smallest])
+    smallest = right;
+
+  if (smallest != x) {
+    std::swap(vdata[x], vdata[smallest]);
+    return smallest;
   }
-  if(vdata[left] > vdata[right] && vdata[right] > val){
-    vdata[x] = vdata[right];
-    vdata[right] = val;
-    return right;
-  }else if(vdata[right] > vdata[left] && vdata[left] > val){
-    vdata[x] = vdata[left];
-    vdata[left] = val;
-    return left;
-  }else{
-    return vdata.size() - 1;
-  }
+
+  return x; 
 }
